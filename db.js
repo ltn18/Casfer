@@ -18,14 +18,14 @@ connection.connect((err) => {
     if (err) throw err;
     console.log("Connected to MYSQL Server!");
 
-    connection.query("DROP TABLE points", 
+    connection.query("DROP TABLE casfer", 
         (err, drop) => {
   
         // Query to create table "sample"
         var createStatament = 
-        "CREATE TABLE points(ConstructionDateText int(10), " +
+        "CREATE TABLE casfer(ConstructionDateText int(10), " +
         "LatitudeMeasure FLOAT(7,4), LongitudeMeasure FLOAT(7,4), HUCEightDigitCode int(8), " +
-        "CountryCode varchar(2), StateCode int(2), CountyCode int(3))"
+        "CountryCode varchar(2), StateCode int(2), CountyCode int(3), minX FLOAT(7,4), maxX FLOAT(7,4), minY FLOAT(7,4), maxY FLOAT(7,4))"
   
         // Creating table "sample"
         connection.query(createStatament, (err, drop) => {
@@ -54,8 +54,9 @@ csvtojson().fromFile(fileName).then(source => {
 
   
         var insertStatement = 
-        `INSERT INTO points values(?, ?, ?, ?, ?, ?, ?)`;
-        var items = [ConstructionDateText, LatitudeMeasure, LongitudeMeasure, HUCEightDigitCode, CountryCode, StateCode, CountyCode];
+        `INSERT INTO casfer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        var items = [ConstructionDateText, LatitudeMeasure, LongitudeMeasure, HUCEightDigitCode, CountryCode, StateCode, CountyCode,
+             LongitudeMeasure, LongitudeMeasure, LatitudeMeasure, LatitudeMeasure];
   
         // Inserting data of current row
         // into database
