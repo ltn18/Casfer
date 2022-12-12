@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "assert": "^2.0.0",
+    "csv": "^6.2.5",
+    "csv-parse": "^5.3.3",
+    "kdbush": "^3.0.0",
+    "mysql": "^2.18.1",
+    "rbush": "^3.0.1",
+    "rbush-knn": "^3.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
