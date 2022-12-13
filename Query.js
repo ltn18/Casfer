@@ -29,7 +29,7 @@ class Query {
                 const time = params[2].trim().split(" ");
                 const start = time[0].trim().split("=")[1].trim()
                 const end = time[1].trim().split("=")[1].trim()
-                console.log(start, end);
+                // console.log(start, end);
                 select_points = `
                     SELECT * FROM Casfer
                     WHERE Casfer.minX >= ${minX} AND Casfer.maxX <= ${maxX} 
