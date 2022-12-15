@@ -51,7 +51,10 @@ for (var i = 0; i < data.length; i++) {
         var marker = L.marker([place.LatitudeMeasure, place.LongitudeMeasure], {
             title: place.StateCode
         });
-        marker.addTo(map).bindPopup("ConstructionDateText: " + place.ConstructionDateText +"\n" + "StateCode: "+ place.StateCode);
+        marker.addTo(map).bindPopup("ConstructionDateText: " + place.ConstructionDateText +"<br>" + 
+                                    "StateCode: "+ place.StateCode +"<br>" + 
+                                    "Latitude: "+ place.LatitudeMeasure +"<br>" + 
+                                    "Longitude: "+ place.LongitudeMeasure);
     }
 }
     // map.touchZoom.disable();
