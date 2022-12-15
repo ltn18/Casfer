@@ -17,33 +17,35 @@ class Query {
 
             //Search only bounding boxes query
             if (params.length == 2){
-                
                 select_points = `
-                    SELECT * FROM Casfer
-                    WHERE Casfer.minX >= ${minX} AND Casfer.maxX <= ${maxX} 
-                        AND Casfer.minY >= ${minY} AND Casfer.maxY <= ${maxY};
+                    SELECT * FROM casfer
+                    WHERE casfer.minX >= ${minX} AND casfer.maxX <= ${maxX} 
+                        AND casfer.minY >= ${minY} AND casfer.maxY <= ${maxY};
                 `
             }
             //Search bounding boxes and time query
             else{
                 const time = params[2].trim().split(" ");
-                const start = time[0].trim().split("=")[1].trim()
-                const end = time[1].trim().split("=")[1].trim()
+                const start = parseInt(time[0].trim().split("=")[1].trim())
+                const end = parseInt(time[1].trim().split("=")[1].trim())
+
                 // console.log(start, end);
                 select_points = `
-                    SELECT * FROM Casfer
-                    WHERE Casfer.minX >= ${minX} AND Casfer.maxX <= ${maxX} 
-                        AND Casfer.minY >= ${minY} AND Casfer.maxY <= ${maxY}
-                        AND Casfer.HUCEightDigitCode >= ${start}
-                        AND Casfer.HUCEightDigitCode <= ${end};
+                    SELECT * FROM casfer
+                    WHERE casfer.minX >= ${minX} AND casfer.maxX <= ${maxX} 
+                        AND casfer.minY >= ${minY} AND casfer.maxY <= ${maxY}
+                        AND casfer.ConstructionDateText >= ${start}
+                        AND casfer.ConstructionDateText <= ${end};
                 `
+                // console.log(select_points);
+
             }
         }
         //Projection query
         else{
             const keyword = params[0].trim().split("=")[1].trim();
             select_points = `
-                SELECT DISTINCT ${keyword} FROM Casfer 
+                SELECT DISTINCT ${keyword} FROM casfer 
             `
         }
 

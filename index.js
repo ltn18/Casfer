@@ -12,25 +12,27 @@ const config = {
 const connection = mysql.createConnection(config);
 
 const main = () => {
-    var query = "minX=-140 maxX=-100 // minY=30 maxY=50 // start=5070204 end=19010301";
-    var projection = "keyword=HUCEightDigitCode"
+    var query = "minX=-140 maxX=-100 // minY=30 maxY=50 // start=19590601 end=19740901";
+    var projection = "keyword=HUCEightDigitCode";
     var search = Query.searchPoint(query);
 
     connection.connect(function(err) {
         if (err) throw err;
 
-        // connection.query("SELECT * FROM casfer", (err, res) => {
-        //     console.log(res)
-        // });
-
-        var before = Date.now();
-        connection.query(search, function (err, result, fields) {
-          if (err) throw err;
-          var res = JSON.stringify(result);
-          console.log(res);
+        // 939681
+        connection.query("SELECT * FROM casfer", (err, res) => {
+            // var result = JSON.stringify(res);
+            console.log(res.length);
         });
-        var after = Date.now();
-        // console.log(`Linear scan search with BBox and Time Range takes ${after - before} seconds`)
+
+        console.log(search)
+
+        connection.query(search, function (err, result, fields) {
+            if (err) throw err;
+            //   var res = JSON.stringify(result);
+            //   console.log(res);
+            console.log(result.length)
+        });
     });
 }
 

@@ -36,6 +36,7 @@ const csvtojson = require('csvtojson');
 const fileName = "./data.csv";
 
 csvtojson().fromFile(fileName).then(source => {
+    var stateSet = new Set();
 
     // Fetching the data from each row
     // and inserting to the table "sample"
@@ -48,11 +49,15 @@ csvtojson().fromFile(fileName).then(source => {
             StateCode = source[i]["StateCode"],
             CountyCode = source[i]["CountyCode"]
 
+        stateSet.add(StateCode);
+
+        var x = parseFloat(LongitudeMeasure)
+        var y = parseFloat(LatitudeMeasure)
 
         var insertStatement =
             `INSERT INTO casfer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        var items = [ConstructionDateText, LatitudeMeasure, LongitudeMeasure, HUCEightDigitCode, CountryCode, StateCode, CountyCode,
-            LongitudeMeasure, LongitudeMeasure, LatitudeMeasure, LatitudeMeasure];
+        var items = [parseInt(ConstructionDateText), y, x, HUCEightDigitCode, CountryCode, StateCode, CountyCode,
+            x, x, y, y];
 
         // Inserting data of current row
         // into database
@@ -65,6 +70,7 @@ csvtojson().fromFile(fileName).then(source => {
             });
     }
 
-    console.log("All items stored into database successfully");
-    console.log(`INSERT all items takes ${Math.floor((after - before)/1000)} seconds`)
+    console.log(`${source.length} items are stored into database successfully`);
+    // console.log(stateSet);
+    // console.log(`INSERT all items takes ${Math.floor((after - before)/1000)} seconds`)
 });
