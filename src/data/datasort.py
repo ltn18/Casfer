@@ -14,14 +14,15 @@ def findStateIndex(i):
         if np.equal(code, i):
             return j
 
-idx = stationsDF.query('StateCode > 56').index[0]
-stations = stationsDF[:idx]
+previousIndex = 0
+for i in range(len(statesDF)):
+    code = statesDF['code'][i]
+    idex = stationsDF.query('StateCode > ' + str(code)).index[0]
+    df = stationsDF[previousIndex:idex]
+    length = len(df)
+    count = statesDF['stationsCount'][i]
+    statesDF['stationsCount'][i] = length
+    previousIndex = idex
 
-# for i in range(0, len(stationsDF)-1):
-#     index = findStateIndex(stationsDF['StateCode'][i])
-#     if index == None:
-#         print(i)
-#     count = statesDF['stationsCount'][index]
-#     statesDF['stationsCount'][index] = count + 1
-
-print(stationsDF[0])
+print(statesDF)
+print(statesDF['stationsCount'].sum())
