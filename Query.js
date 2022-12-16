@@ -4,26 +4,51 @@ class Query {
     // template: SELECTION: BBox([], []) + Time(start, end) + PROJECTION: Feature/Keyword
     static searchPoint = (text) => {
         const params = text.trim().split("//");
-        
-        const x = params[0].trim().split(" ");
-        const minX = parseFloat(x[0].trim().split("=")[1].trim());
-        const maxX = parseFloat(x[1].trim().split("=")[1].trim());
-        
-        const y = params[1].trim().split(" ");
-        const minY = parseFloat(y[0].trim().split("=")[1].trim());
-        const maxY = parseFloat(y[1].trim().split("=")[1].trim());
+        var select_points = "";
+        //Search bounding boxes
+        if(params.length > 1){
+            const x = params[0].trim().split(" ");
+            const minX = parseFloat(x[0].trim().split("=")[1].trim());
+            const maxX = parseFloat(x[1].trim().split("=")[1].trim());
+            
+            const y = params[1].trim().split(" ");
+            const minY = parseFloat(y[0].trim().split("=")[1].trim());
+            const maxY = parseFloat(y[1].trim().split("=")[1].trim());
 
-        const time = params[2].trim().split(" ");
-        const start = time[0].trim().split("=")[1].trim()
-        const end = time[1].trim().split("=")[1].trim()
+            //Search only bounding boxes query
+            if (params.length == 2){
+                select_points = `
+                    SELECT * FROM casfer
+                    WHERE casfer.minX >= ${minX} AND casfer.maxX <= ${maxX} 
+                        AND casfer.minY >= ${minY} AND casfer.maxY <= ${maxY};
+                `
+            }
+            //Search bounding boxes and time query
+            else{
+                const time = params[2].trim().split(" ");
+                const start = parseInt(time[0].trim().split("=")[1].trim())
+                const end = parseInt(time[1].trim().split("=")[1].trim())
 
-        const keyword = params[3].trim().split("=")[1].trim();
-        
-        var select_points = `
-            SELECT * FROM Casfer
-            WHERE Casfer.minX >= ${minX} AND Casfer.maxX <= ${maxX} 
-                AND Casfer.minY >= ${minY} AND Casfer.maxY <= ${maxY};
-        `
+                // console.log(start, end);
+                select_points = `
+                    SELECT * FROM casfer
+                    WHERE casfer.minX >= ${minX} AND casfer.maxX <= ${maxX} 
+                        AND casfer.minY >= ${minY} AND casfer.maxY <= ${maxY}
+                        AND casfer.ConstructionDateText >= ${start}
+                        AND casfer.ConstructionDateText <= ${end};
+                `
+                // console.log(select_points);
+
+            }
+        }
+        //Projection query
+        else{
+            const keyword = params[0].trim().split("=")[1].trim();
+            select_points = `
+                SELECT DISTINCT ${keyword} FROM casfer 
+            `
+        }
+
         return select_points;
 
         // console.log(minX + " " + maxX);
