@@ -1,76 +1,73 @@
-const GeoRBush = require("./GeoRBush");
-const Query = require("./Query")
 const mysql = require("mysql")
+const Query = require("./Query")
 
-const config = {
-    host: 'localhost',
-    user: 'csds234',
-    port: 3306,
-    password: 'PassWord@234',
-    database: 'csds234'
-}
-const connection = mysql.createConnection(config);
-
-connection.connect((err) => {
-    if (err) throw err;
-    console.log("Connected to MYSQL Server!");
-
-    connection.query("DROP TABLE casfer",
-        (err, drop) => {
-            // Query to create table "sample"
-            var createStatament =
-                "CREATE TABLE casfer(ConstructionDateText int(10), " +
-                "LatitudeMeasure FLOAT(7,4), LongitudeMeasure FLOAT(7,4), HUCEightDigitCode int(8), " +
-                "CountryCode varchar(2), StateCode int(2), CountyCode int(3), minX FLOAT(7,4), maxX FLOAT(7,4), minY FLOAT(7,4), maxY FLOAT(7,4))"
-
-            // Creating table "sample"
-            connection.query(createStatament, (err, drop) => {
-                if (err)
-                    console.log("ERROR: ", err);
-            });
-        });
-});
-
-const csvtojson = require('csvtojson');
-// CSV file name
-const fileName = "./data.csv";
-
-csvtojson().fromFile(fileName).then(source => {
-    var stateSet = new Set();
-
-    // Fetching the data from each row
-    // and inserting to the table "sample"
-    for (var i = 0; i < source.length; i++) {
-        var ConstructionDateText = source[i]["ConstructionDateText"],
-            LatitudeMeasure = source[i]["LatitudeMeasure"],
-            LongitudeMeasure = source[i]["LongitudeMeasure"],
-            HUCEightDigitCode = source[i]["HUCEightDigitCode"],
-            CountryCode = source[i]["CountryCode"],
-            StateCode = source[i]["StateCode"],
-            CountyCode = source[i]["CountyCode"]
-
-        stateSet.add(StateCode);
-
-        var x = parseFloat(LongitudeMeasure)
-        var y = parseFloat(LatitudeMeasure)
-
-        var insertStatement =
-            `INSERT INTO casfer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        var items = [parseInt(ConstructionDateText), y, x, HUCEightDigitCode, CountryCode, StateCode, CountyCode,
-            x, x, y, y];
-
-        // Inserting data of current row
-        // into database
-        connection.query(insertStatement, items,
-            (err, results, fields) => {
-                if (err) {
-                    console.log("Unable to insert item at row ", i + 1);
-                    return console.log(err);
-                }
-            });
+class DB {
+    static #config = {
+        host: 'localhost',
+        user: 'csds234',
+        port: 3306,
+        password: 'PassWord@234',
+        database: 'csds234'
     }
+    
+    static connect = (records) => {
+        const connection = mysql.createConnection(this.#config)
 
-    console.log(`${source.length} items are stored into database successfully`);
-    // console.log(stateSet);
-    // console.log(`INSERT all items takes ${Math.floor((after - before)/1000)} seconds`)
-});
+        connection.connect((err) => {
+            if (err) throw err;
+            console.log("Connected to MYSQL Server!");
+        
+            const point = {
+                ConstructionDateText: '19810828',
+                LatitudeMeasure: 60.4833165,
+                LongitudeMeasure: -151.180003,
+                HUCEightDigitCode: '19020302',
+                CountryCode: 'US',
+                StateCode: '2',
+                CountyCode: '122',
+                minX: -151.180003,
+                maxX: -151.180003,
+                minY: 60.4833165,
+                maxY: 60.4833165
+            };
+        
+            connection.query(Query.dropTable(), (err, res) => {
+                if (err) throw err;
+                console.log("Casfer table dropped!")
+            });
+        
+            connection.query(Query.createTable(), (err, res) => {
+                if (err) throw err;
+                console.log("Casfer table created!")
+            });
+        
+            for (let i = 0; i < records.length; i++) {
+                connection.query(Query.insertPoint(records[i]), (err, res) => {
+                    if (err) throw err;
+                    console.log("Record " + records.HUCEightDigitCode + " added!");
+                });
+            }
+
+            // connection.query(Query.insertPoint(point), (err, res) => {
+            //     if (err) throw err;
+            // });
+        
+            var search = `SELECT * FROM Casfer`;
+            var query = "minX=-160 maxX=-150 // minY=59 maxY=61 // start=19680508 end=19730511 // keyword=HUCEightDigitCode";
+        
+            connection.query(Query.searchPoint(query), (err, res) => {
+                if (err) throw err;
+                console.log(res);
+            });
+        
+            // const BBox = {
+            //     minX: -140,
+            //     maxX: -131,
+            //     minY: 55,
+            //     maxY: 60
+            // };
+        });
+    }
+}
+
+module.exports = DB;
