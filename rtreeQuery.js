@@ -38,18 +38,23 @@ csv().fromFile(path)
         }
     })
     .then(() => {
+        console.time('load data into rtree')
         rtree.load(records);
+        console.timeEnd('load data into rtree')
         // console.log(records)
 
-        // minX=-140 maxX=-100 // minY=30 maxY=50 // start=19590601 end=19740901
+        // minX=-160 maxX=-150 // minY=59 maxY=61
         const bbox = {
-            minX: -140,
-            minY: 30,
-            maxX: -100,
-            maxY: 50
+            minX: -160,
+            maxX: -150,
+            minY: 59,
+            maxY: 61
         }
 
+        console.time('search rtree bbox')
         const result = rtree.search(bbox);
-        console.log(result);
+        console.timeEnd('search rtree bbox')
+
+        console.log(result.length);
     })
 
